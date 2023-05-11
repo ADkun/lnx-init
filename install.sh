@@ -81,9 +81,11 @@ ConfigureBashrc() {
     fi
 
     if [ "$zoxide_installed" = "true" ]; then
-        echo "" >> /etc/bashrc
-        echo 'eval "$(zoxide init bash)"' >> /etc/bashrc
-        PrintGreen "/etc/bashrc zoxide init wroted"
+        if ! cat /etc/bashrc | grep "zoxide init" >/dev/null 2>&1; then
+            echo "" >> /etc/bashrc
+            echo 'eval "$(zoxide init bash)"' >> /etc/bashrc
+            PrintGreen "/etc/bashrc zoxide init wroted"
+        fi
     fi
 }
 
