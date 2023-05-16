@@ -65,6 +65,22 @@ InstallZoxide() {
     fi
 }
 
+InstallAg() {
+    if [ -f "/usr/local/bin/ag" ]; then
+        return 0
+    fi
+
+    if [ -f "/usr/bin/ag" ]; then
+        return 0
+    fi
+
+    if [ "$is_x64" = "true" ]; then
+        if sudo cp -f ./silver/x64/ag /usr/local/bin/; then
+            PrintGreen "Install ag succeed"
+        fi
+    fi
+}
+
 ConfigureVimrc() {
     if which vim >/dev/null 2>&1 && ! cat /etc/vimrc | grep pastetoggle >/dev/null 2>&1; then
         echo "" >> /etc/vimrc
@@ -106,6 +122,7 @@ ConfigureFiles() {
 Main() {
     GetArchitecture
     InstallZoxide
+    InstallAg
     ConfigureFiles
 }
 Main
