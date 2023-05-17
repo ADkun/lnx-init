@@ -122,4 +122,23 @@ function lsofi {
         echo ""
     done
 }
+
+function unlockd {
+    local arg;arg=
+    for arg in "$@"; do
+        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
+        local cur_dir="$arg"
+        if [ "$cur_dir" = "/" ]; then
+            PrintRed "Don't do this"
+            return 1
+        fi
+        PrintBlue "$cur_dir"
+        result=$(lsof +D "$cur_dir")
+        pids=$(echo "$result" | sed '1d' | awk '{print $2}')
+        if echo "$pids" | xargs -I {} kill -9 {}; then
+            PrintGreen "Killed:"
+            PrintGreen "$pids"
+        fi
+    done
+}
 ### AD ###
