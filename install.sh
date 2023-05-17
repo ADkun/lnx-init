@@ -46,6 +46,7 @@ GetArchitecture() {
 
 InstallZoxide() {
     if [ -f "/usr/local/bin/zoxide" ]; then
+        zoxide_installed=true
         return 0
     fi
 
@@ -67,6 +68,7 @@ InstallZoxide() {
 
 InstallAg() {
     if [ -f "/usr/local/bin/ag" ]; then
+        ag_installed=true
         return 0
     fi
 
@@ -86,7 +88,7 @@ InstallAg() {
 }
 
 ConfigureVimrc() {
-    if which vim >/dev/null 2>&1 && ! cat /etc/vimrc | grep pastetoggle >/dev/null 2>&1; then
+    if which vim >/dev/null 2>&1 && ! cat /etc/vimrc | grep '""" AD """' >/dev/null 2>&1; then
         echo "" >> /etc/vimrc
         cat ./vimrc >> /etc/vimrc
         PrintGreen "/etc/vimrc wroted"
@@ -94,7 +96,7 @@ ConfigureVimrc() {
 }
 
 ConfigureBashrc() {
-    if ! cat /etc/bashrc | grep SetPrinter >/dev/null 2>&1; then
+    if ! cat /etc/bashrc | grep "### AD ###" >/dev/null 2>&1; then
         echo "" >> /etc/bashrc
         cat ./bashrc >> /etc/bashrc
         PrintGreen "/etc/bashrc wroted"
@@ -118,7 +120,7 @@ ConfigureBashrc() {
 }
 
 ConfigureInputrc() {
-    if ! cat /etc/inputrc | grep "completion-ignore-case" >/dev/null 2>&1; then
+    if ! cat /etc/inputrc | grep "### AD ###" >/dev/null 2>&1; then
         echo "" >> /etc/inputrc
         cat ./inputrc >> /etc/inputrc
         PrintGreen "/etc/inputrc wroted"
