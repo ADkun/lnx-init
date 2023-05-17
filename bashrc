@@ -99,3 +99,25 @@ alias girm='git remote -v'
 
 # ssh
 alias s='SFunc(){ ssh ${1}@${2}; };SFunc'
+
+function lsofd {
+    local arg;arg=
+    for arg in "$@"; do
+        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
+        local cur_dir="$arg"
+        PrintBlue "$cur_dir"
+        lsof +D "$cur_dir"
+        echo ""
+    done
+}
+
+function lsofi {
+    local arg;arg=
+    for arg in "$@"; do
+        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
+        local cur_port="$arg"
+        PrintBlue "$cur_port"
+        lsof -i:"$cur_port"
+        echo ""
+    done
+}
