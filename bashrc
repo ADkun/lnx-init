@@ -1,3 +1,4 @@
+### AD ###
 if [[ $- == *i* ]]; then
     PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\$'
 fi
@@ -121,3 +122,4 @@ function lsofi {
         echo ""
     done
 }
+### AD ###

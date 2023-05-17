@@ -1,3 +1,4 @@
+""" AD """
 set pastetoggle=<F9>
 set nocompatible " 关闭 vi 兼容模式
 syntax on " 自动语法高亮
@@ -87,3 +88,4 @@ nnoremap <leader>bu :buffer<space>
 
 set clipboard=unnamed
 " set foldclose=all " 设置为自动关闭折叠
+""" AD """
