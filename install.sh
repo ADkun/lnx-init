@@ -76,8 +76,12 @@ InstallAg() {
 
     if [ "$is_x64" = "true" ]; then
         if sudo cp -f ./silver/x64/ag /usr/local/bin/; then
-            PrintGreen "Install ag succeed"
+            ag_installed=true
         fi
+    fi
+
+    if [ "$ag_installed" = "true" ]; then
+        PrintGreen "Install ag succeed"
     fi
 }
 
@@ -101,6 +105,14 @@ ConfigureBashrc() {
             echo "" >> /etc/bashrc
             echo 'eval "$(zoxide init bash)"' >> /etc/bashrc
             PrintGreen "/etc/bashrc zoxide init wroted"
+        fi
+    fi
+
+    if [ "$ag_installed" = "true" ]; then
+        if ! cat /etc/bashrc | grep "alias agl" >/dev/null 2>&1; then
+            echo "" >> /etc/bashrc
+            echo "alias agl='ag -l '" >> /etc/bashrc
+            PrintGreen "/etc/bashrc agl wroted"
         fi
     fi
 }
