@@ -1,83 +1,37 @@
 #!/bin/bash
 
-SetPrinter(){
-    SetRed="echo -en \e[91m"
-    SetGreen="echo -en \e[32m"
-    SetYellow="echo -en \e[33m"
-    SetBlue="echo -en \e[36m"
-    UnsetColor="echo -en \e[0m"
-    Print(){
-        echo -e "${1}"
-    }
-    PrintRed(){
-        $SetRed
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintYellow(){
-        $SetYellow
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintGreen(){
-        $SetGreen
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintBlue(){
-        $SetBlue
-        echo -e "${1}"
-        $UnsetColor
-    }
-}
-SetPrinter
-
-GetArchitecture() {
-    if uname -a | grep x86_64 >/dev/null 2>&1; then
-        is_x64=true
-        PrintGreen "Is x64"
-    fi
-
-    if uname -a | grep -E 'arm|aarch' >/dev/null 2>&1; then
-        is_arm=true
-        PrintGreen "Is arm"
-    fi
-}
+. ./common.sh
 
 InstallZoxide() {
-    if [ -f "/usr/local/bin/zoxide" ]; then
+    if [ -f "$BIN_PATH/zoxide" ]; then
         zoxide_installed=true
         return 0
     fi
 
     if [[ ${is_arm} == true ]]; then
-        if sudo cp -rf ./zoxide/aarch64/* /usr/local/bin/; then
+        if cp -rf ./zoxide/aarch64/* "$BIN_PATH"; then
             zoxide_installed=true
         fi
     elif [[ ${is_x64} == true ]]; then
-        if sudo cp -rf ./zoxide/x64/* /usr/local/bin/; then
+        if cp -rf ./zoxide/x64/* "$BIN_PATH"; then
             zoxide_installed=true
         fi
     fi
 
     if [ "$zoxide_installed" = "true" ]; then
-        sudo chmod u+x /usr/local/bin/zoxide
+        chmod u+x "$BIN_PATH/zoxide"
         PrintGreen "zoxide installed"
     fi
 }
 
 InstallAg() {
-    if [ -f "/usr/local/bin/ag" ]; then
+    if [ -f "/usr/local/bin/ag" -o -f "/usr/bin/ag" -o -f "$HOME/.local/bin/ag" ]; then
         ag_installed=true
         return 0
     fi
 
-    if [ -f "/usr/bin/ag" ]; then
-        return 0
-    fi
-
     if [ "$is_x64" = "true" ]; then
-        if sudo cp -f ./silver/x64/ag /usr/local/bin/; then
+        if cp -f ./silver/x64/ag "$BIN_PATH"; then
             ag_installed=true
         fi
     fi
@@ -88,42 +42,49 @@ InstallAg() {
 }
 
 ConfigureVimrc() {
-    if which vim >/dev/null 2>&1 && ! cat /etc/vimrc | grep '""" AD """' >/dev/null 2>&1; then
-        echo "" >> /etc/vimrc
-        cat ./vimrc >> /etc/vimrc
-        PrintGreen "/etc/vimrc wroted"
+    if which vim >/dev/null 2>&1 && ! cat "$VIMRC_PATH" | grep '""" AD """' >/dev/null 2>&1; then
+        echo "" >> "$VIMRC_PATH"
+        cat ./vimrc >> "$VIMRC_PATH"
+        PrintGreen "$VIMRC_PATH wroted"
     fi
 }
 
 ConfigureBashrc() {
-    if ! cat /etc/bashrc | grep "### AD ###" >/dev/null 2>&1; then
-        echo "" >> /etc/bashrc
-        cat ./bashrc >> /etc/bashrc
-        PrintGreen "/etc/bashrc wroted"
+    if ! cat "$BASHRC_PATH" | grep "### AD ###" >/dev/null 2>&1; then
+        echo "" >> "$BASHRC_PATH"
+        cat ./bashrc >> "$BASHRC_PATH"
+        PrintGreen "$BASHRC_PATH wroted"
     fi
 
     if [ "$zoxide_installed" = "true" ]; then
-        if ! cat /etc/bashrc | grep "zoxide init" >/dev/null 2>&1; then
-            echo "" >> /etc/bashrc
-            echo 'eval "$(zoxide init bash)"' >> /etc/bashrc
-            PrintGreen "/etc/bashrc zoxide init wroted"
+        if ! cat "$BASHRC_PATH" | grep "zoxide init" >/dev/null 2>&1; then
+            echo "" >> "$BASHRC_PATH"
+            echo 'eval "$(zoxide init bash)"' >> "$BASHRC_PATH"
+            PrintGreen "$BASHRC_PATH zoxide init wroted"
         fi
     fi
 
     if [ "$ag_installed" = "true" ]; then
-        if ! cat /etc/bashrc | grep "alias agl" >/dev/null 2>&1; then
-            echo "" >> /etc/bashrc
-            echo "alias agl='ag -l '" >> /etc/bashrc
-            PrintGreen "/etc/bashrc agl wroted"
+        if ! cat "$BASHRC_PATH" | grep "alias agl" >/dev/null 2>&1; then
+            echo "" >> "$BASHRC_PATH"
+            echo "alias agl='ag -l '" >> "$BASHRC_PATH"
+            PrintGreen "$BASHRC_PATH agl wroted"
+        fi
+    fi
+
+    if [ "$USERMODE" = "true" ]; then
+        if ! cat "$BASHRC_PATH" | grep "PATH=$BIN_PATH" >/dev/null 2>&1; then
+            echo "" >> "$BASHRC_PATH"
+            echo "PATH=$BIN_PATH:$PATH" >> "$BASHRC_PATH"
         fi
     fi
 }
 
 ConfigureInputrc() {
-    if ! cat /etc/inputrc | grep "### AD ###" >/dev/null 2>&1; then
-        echo "" >> /etc/inputrc
-        cat ./inputrc >> /etc/inputrc
-        PrintGreen "/etc/inputrc wroted"
+    if ! cat "$INPUTRC_PATH" | grep "### AD ###" >/dev/null 2>&1; then
+        echo "" >> "$INPUTRC_PATH"
+        cat ./inputrc >> "$INPUTRC_PATH"
+        PrintGreen "$INPUTRC_PATH wroted"
     fi
 }
 
@@ -134,7 +95,6 @@ ConfigureFiles() {
 }
 
 Main() {
-    GetArchitecture
     InstallZoxide
     InstallAg
     ConfigureFiles

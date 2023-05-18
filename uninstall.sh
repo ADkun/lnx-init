@@ -1,66 +1,36 @@
 #!/bin/bash
 
-SetPrinter(){
-    SetRed="echo -en \e[91m"
-    SetGreen="echo -en \e[32m"
-    SetYellow="echo -en \e[33m"
-    SetBlue="echo -en \e[36m"
-    UnsetColor="echo -en \e[0m"
-    Print(){
-        echo -e "${1}"
-    }
-    PrintRed(){
-        $SetRed
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintYellow(){
-        $SetYellow
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintGreen(){
-        $SetGreen
-        echo -e "${1}"
-        $UnsetColor
-    }
-    PrintBlue(){
-        $SetBlue
-        echo -e "${1}"
-        $UnsetColor
-    }
-}
-SetPrinter
+. ./common.sh
 
 function Uninstall {
-    if sed -i '/### AD ###/,/### AD ###/d' /etc/bashrc; then
-        PrintGreen "Uninstall /etc/bashrc succeed"
+    if sed -i '/### AD ###/,/### AD ###/d' "$BASHRC_PATH"; then
+        PrintGreen "Uninstall $BASHRC_PATH succeed"
     fi
 
-    if sed -i '/### AD ###/,/### AD ###/d' /etc/inputrc; then
-        PrintGreen "Uninstall /etc/inputrc succeed"
+    if sed -i '/### AD ###/,/### AD ###/d' "$INPUTRC_PATH"; then
+        PrintGreen "Uninstall $INPUTRC_PATH succeed"
     fi
 
-    if sed -i '/""" AD """/,/""" AD """/d' /etc/vimrc; then
-        PrintGreen "Uninstall /etc/vimrc succeed"
+    if sed -i '/""" AD """/,/""" AD """/d' "$VIMRC_PATH"; then
+        PrintGreen "Uninstall $VIMRC_PATH succeed"
     fi
 
-    if [ -f /usr/local/bin/zoxide ]; then
-        if rm -f /usr/local/bin/zoxide; then
-            PrintGreen "Uninstall /usr/local/bin/zoxide succeed"
+    if [ -f $BIN_PATH/zoxide ]; then
+        if rm -f $BIN_PATH/zoxide; then
+            PrintGreen "Uninstall $BIN_PATH/zoxide succeed"
         fi
     fi
-    if sed -i '/zoxide init bash/d' /etc/bashrc; then
-        PrintGreen "Uninstall /etc/bashrc zoxide succeed"
+    if sed -i '/zoxide init bash/d' "$BASHRC_PATH"; then
+        PrintGreen "Uninstall $BASHRC_PATH zoxide succeed"
     fi
 
-    if [ -f /usr/local/bin/ag ]; then
-        if rm -f /usr/local/bin/ag; then
-            PrintGreen "Uninstall /usr/local/bin/ag succeed"
+    if [ -f $BIN_PATH/ag ]; then
+        if rm -f $BIN_PATH/ag; then
+            PrintGreen "Uninstall $BIN_PATH/ag succeed"
         fi
     fi
-    if sed -i '/alias agl/d' /etc/bashrc; then
-        PrintGreen "Uninstall /etc/bashrc ag succeed"
+    if sed -i '/alias agl/d' "$BASHRC_PATH"; then
+        PrintGreen "Uninstall $BASHRC_PATH ag succeed"
     fi
 }
 
