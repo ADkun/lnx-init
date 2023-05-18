@@ -56,6 +56,13 @@ ConfigureBashrc() {
         PrintGreen "$BASHRC_PATH wroted"
     fi
 
+    if [ "$USERMODE" = "true" ]; then
+        if ! cat "$BASHRC_PATH" | grep "PATH=$BIN_PATH" >/dev/null 2>&1; then
+            echo "" >> "$BASHRC_PATH"
+            echo "PATH=$BIN_PATH:$PATH" >> "$BASHRC_PATH"
+        fi
+    fi
+
     if [ "$zoxide_installed" = "true" ]; then
         if ! cat "$BASHRC_PATH" | grep "zoxide init" >/dev/null 2>&1; then
             echo "" >> "$BASHRC_PATH"
@@ -69,13 +76,6 @@ ConfigureBashrc() {
             echo "" >> "$BASHRC_PATH"
             echo "alias agl='ag -l '" >> "$BASHRC_PATH"
             PrintGreen "$BASHRC_PATH agl wroted"
-        fi
-    fi
-
-    if [ "$USERMODE" = "true" ]; then
-        if ! cat "$BASHRC_PATH" | grep "PATH=$BIN_PATH" >/dev/null 2>&1; then
-            echo "" >> "$BASHRC_PATH"
-            echo "PATH=$BIN_PATH:$PATH" >> "$BASHRC_PATH"
         fi
     fi
 }
