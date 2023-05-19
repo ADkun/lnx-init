@@ -1,9 +1,12 @@
 ### AD ###
+# Colorful shell prompt
 if [[ $- == *i* ]]; then
     PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\$'
 fi
+# Type folder path to cd into it withoud "cd"
 shopt -s autocd
 
+# Common Function: Print colorful words
 SetPrinter(){
     SetRed="echo -en \e[91m"
     SetGreen="echo -en \e[32m"
@@ -36,54 +39,107 @@ SetPrinter(){
 }
 SetPrinter
 
-# find grep
-alias fig='FgFunc(){ find . -type f | while read -r line; do res=$(grep -a "$1" $line); if [ -n "$res" ];then PrintGreen "$line:"; Print "$res"; res=""; fi; done; };FgFunc'
-alias figl='FgFunc(){ find . -type f | while read -r line; do res=$(grep -a "$1" $line); if [ -n "$res" ];then echo "$line"; res=""; fi; done; };FgFunc'
-alias figi='FgFunc(){ find . -type f | while read -r line; do res=$(grep -ai "$1" $line); if [ -n "$res" ];then PrintGreen "$line"; Print "$res"; res=""; fi; done; };FgFunc'
-alias figil='FgFunc(){ find . -type f | while read -r line; do res=$(grep -ai "$1" $line); if [ -n "$res" ];then echo "$line";fi; done; };FgFunc'
+# Find all matched files' content in current folder(recursive)
+# Note: [If already installed the silver searcher(ag), use "ag" and "agl" to replace these commands]
+# fig: Case sensitive, show file names and matched lines
+# figl: Case sensitive, show file names only
+# figi: Case insensitive, show file names and matched lines
+# figil: Case insensitive, show file names only
+function fig {
+    find . -type f | while read -r line; do res=$(grep -a "$1" "$line"); if [ -n "$res" ]; then PrintGreen "$line:"; Print "$res"; res=""; fi; done
+}
+function figl {
+    find . -type f | while read -r line; do res=$(grep -a "$1" "$line"); if [ -n "$res" ]; then echo "$line:"; res=""; fi; done
+}
+function figi {
+    find . -type f | while read -r line; do res=$(grep -ai "$1" "$line"); if [ -n "$res" ]; then PrintGreen "$line:"; Print "$res"; res=""; fi; done
+}
+function figil {
+    find . -type f | while read -r line; do res=$(grep -ai "$1" "$line"); if [ -n "$res" ]; then echo "$line:"; res=""; fi; done
+}
 
+# cd to parent folders by using dots only
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 
-# ps grep kill
-alias pg='PgFunc(){ ps -ef|grep -v grep|grep -i $1; };PgFunc'
+# List matched processes
+function pg {
+    ps -ef | grep -v grep | grep -i "$1";
+}
 
-# find grep
-alias ff='FfFunc(){ find . -type f|grep -i $1; }; FfFunc'
-alias fd='FdFunc(){ find . -type d|grep -i $1; }; FdFunc'
-alias cdff='DffFunc(){ cd $(dirname $(ff $1 | head -n $2 | tail -n 1)); }; DffFunc'
-alias cdff='DffFunc(){ cd $(dirname $(ff $1 | head -n $2 | tail -n 1)); }; DffFunc'
+# Find all matched files in current folder(recursive)
+function ff {
+    find . -type f | grep -i "$1"
+}
+# Find all matched folders in current folder(recursive)
+function fd {
+    find . - type d | grep -i "$1"
+}
+# Find all matched files in current folder and 
+function cdff {
+    cd "$(dirname "$(ff "$1" | head -n "$2" | tail -n 1)")" || return
+}
 
 # locate grep
-alias lc='updatedb;locate'
-alias lg='LgFunc(){ updatedb;locate $1|grep -i $2; };LgFunc'
+function lc {
+    updatedb
+    locate "$1"
+}
+function lg {
+    lc "$1" | grep -i "$2"
+}
 
-# ll grep
+# l is ll
+alias ll="ls -l --color=auto"
 alias l='ll'
-alias llg='LlgFunc(){ ll|grep -i $1; };LlgFunc'
-alias lsg='LsgFunc(){ ls|grep -i $1; };LsgFunc'
+# Grep matched ll result
+function llg {
+    ll | grep -i "$1"
+}
+# Grep matched ls result
+function lsg {
+    ls | grep -i "$1"
+}
 
-# strings grep
-alias strg='StrgFunc(){ strings $1|grep -i $2; };StrgFunc'
+# Show matched strings in a specified file
+function strg {
+    strings "$1" | grep -i "$2"
+}
 
-# chown
-alias chownr='ChownrFunc(){ chown -R $1:$1 $2; };ChownrFunc'
-alias chownf='ChownfFunc(){ chown $1:$1 $2; };ChownfFunc'
-
-# Clear file
-alias wipef='WipefFunc(){ echo "">$1; };WipefFunc'
+# Clear a specified file
+function wipef {
+    if [ -f "$1" ]; then
+        echo "" > "$1"
+    fi
+}
 
 # systemctl
-alias scs='ScstartFunc(){ systemctl start $1; };ScstartFunc'
-alias scr='ScstartFunc(){ systemctl restart $1; };ScstartFunc'
-alias sct='ScstopFunc(){ systemctl stop $1; };ScstopFunc'
-alias sca='ScstatusFunc(){ systemctl status $1; };ScstatusFunc'
-alias sctl='systemctl list-units --type=service'
+function ScDo {
+    systemctl "$1" "$2"
+}
+# Start a service
+function scs {
+    ScDo "start" "$1"
+}
+# Restart a service
+function scr {
+    ScDo "restart" "$1"
+}
+# Stop a service
+function sct {
+    ScDo "stop" "$1"
+}
+# Show a service's status
+function sca {
+    ScDo "status" "$1"
+}
+# Show services list
+alias sclist='systemctl list-units --type=service'
 
-# git
+# git commands
 alias gib='git branch'
 alias gis='git status'
 alias gips='git push'
@@ -98,13 +154,10 @@ alias gid='git diff'
 alias gif='git fetch'
 alias girm='git remote -v'
 
-# ssh
-alias s='SFunc(){ ssh ${1}@${2}; };SFunc'
-
+# Show what processes are in occupying the specified folders(recursive)
 function lsofd {
     local arg;arg=
     for arg in "$@"; do
-        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
         local cur_dir="$arg"
         PrintBlue "$cur_dir"
         lsof +D "$cur_dir"
@@ -112,10 +165,10 @@ function lsofd {
     done
 }
 
+# Show what processes are in occupying the specified ports
 function lsofi {
     local arg;arg=
     for arg in "$@"; do
-        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
         local cur_port="$arg"
         PrintBlue "$cur_port"
         lsof -i:"$cur_port"
@@ -123,10 +176,10 @@ function lsofi {
     done
 }
 
+# kill all processes that are in occupying specified folders(recursive)
 function unlockd {
     local arg;arg=
     for arg in "$@"; do
-        val=$(echo "${arg}" | sed -e "s;--[^=]*=;;")
         local cur_dir="$arg"
         if [ "$cur_dir" = "/" ]; then
             PrintRed "Don't do this"
