@@ -85,6 +85,7 @@ nnoremap <leader>cx ggdG
 nnoremap <leader>wd :pwd<enter>
 nnoremap <leader>bf :buffers<enter>
 nnoremap <leader>bu :buffer<space>
+nnoremap <leader>g :!ls<Enter>
 
 set clipboard=unnamed
 " set foldclose=all " 设置为自动关闭折叠
