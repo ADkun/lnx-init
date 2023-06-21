@@ -39,6 +39,22 @@ SetPrinter(){
 }
 SetPrinter
 
+function run_command {
+    local command
+    local result
+    command="$@"
+    eval "$command"
+    result=$?
+    if [ "$result" -eq 0 ]; then
+        PrintGreen "[OK] $command"
+        return 0 
+    else
+        PrintRed "[ERROR] $command"
+        return "$result"
+    fi
+}
+
+
 # Find all matched files' content in current folder(recursive)
 # Note: [If already installed the silver searcher(ag), use "ag" and "agl" to replace these commands]
 # fig: Case sensitive, show file names and matched lines
@@ -68,6 +84,21 @@ alias ......='cd ../../../../..'
 # List matched processes
 function pg {
     ps -ef | grep -v grep | grep -i "$1";
+}
+# grep processess and kill them
+function pgk {
+    local list
+    local name
+    name="$1"
+    if [ -z "$name" ]; then
+        PrintRed "Usage: pgk <process_name>"
+        return 1
+    fi
+
+    list=$(pg "$name" | awk '{print $2}')
+    while read -r line; do
+        run_command "kill -9 $line"
+    done <<< "$list"
 }
 
 # Find all matched files in current folder(recursive)
@@ -119,6 +150,14 @@ function wipef {
 # systemctl
 function ScDo {
     systemctl "$1" "$2"
+}
+# Enable a service
+function sce {
+    ScDo "enable" "$1"
+}
+# Disable a service
+function scd {
+    ScDo "disable" "$1"
 }
 # Start a service
 function scs {

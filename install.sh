@@ -1,6 +1,12 @@
 #!/bin/bash
 
-. ./common.sh
+function get_path {
+    script_path="$(cd "$(dirname "$0")"; pwd)"
+    script_name=$(basename "$0")
+}
+get_path
+
+. "$script_path/common.sh"
 
 InstallZoxide() {
     if [ -f "$BIN_PATH/zoxide" ]; then

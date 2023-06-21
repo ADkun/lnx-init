@@ -1,6 +1,12 @@
 #!/bin/bash
 
-. ./common.sh
+function get_path {
+    script_path="$(cd "$(dirname "$0")"; pwd)"
+    script_name=$(basename "$0")
+}
+get_path
+
+. "$script_path/common.sh"
 
 function Uninstall {
     if sed -i '/### AD ###/,/### AD ###/d' "$BASHRC_PATH"; then
