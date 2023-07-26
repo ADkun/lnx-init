@@ -233,4 +233,14 @@ function unlockd {
         fi
     done
 }
+
+function gf {
+    local content=$1
+    find . -type f | xargs grep "$content"
+}
+
+function gfi {
+    local content=$1
+    find . -type f | xargs grep -i "$content"
+}
 ### AD ###
