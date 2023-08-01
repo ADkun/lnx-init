@@ -243,4 +243,16 @@ function gfi {
     local content=$1
     find . -type f | xargs grep -i "$content"
 }
+
+function ge {
+    local regex="$1"
+    local directory="${2:-.}" 
+    find "$directory" -type f -exec grep -nH "$regex" {} +
+}
+
+function gel {
+    local regex="$1"
+    local directory="${2:-.}" 
+    find "$directory" -type f -exec grep -l "$regex" {} +
+}
 ### AD ###
