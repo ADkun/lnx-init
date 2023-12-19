@@ -255,4 +255,12 @@ function gel {
     local directory="${2:-.}" 
     find "$directory" -type f -exec grep -l "$regex" {} +
 }
+
+function rmc {
+    local input
+    read -p "Are you sure to remove all contents in current folder?(yes/no)" input
+    if [ "$input" = "yes" ]; then
+        rm -rf ./* .??*
+    fi
+}
 ### AD ###
