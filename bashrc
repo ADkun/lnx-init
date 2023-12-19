@@ -258,7 +258,13 @@ function gel {
 
 function rmc {
     local input
-    read -p "Are you sure to remove all contents in current folder?(yes/no)" input
+    read -p "Are you sure to remove all contents in current folder: $(pwd) (yes/no)" input
+
+    if [ "$(pwd)" = "/" ]; then
+        echo "You are not alloed to remove contents in root folder" >&2
+        return 1
+    fi
+
     if [ "$input" = "yes" ]; then
         rm -rf ./* .??*
     fi
