@@ -269,4 +269,9 @@ function rmc {
         rm -rf ./* .??*
     fi
 }
+
+function exe {
+    local pid=$1
+    readlink /proc/$pid/exe
+}
 ### AD ###
