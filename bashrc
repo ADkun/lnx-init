@@ -97,7 +97,7 @@ function pgk {
 
     list=$(pg "$name" | awk '{print $2}')
     while read -r line; do
-        run_command "kill -9 $line"
+        run_command "kill -TERM $line"
     done <<< "$list"
 }
 
@@ -227,7 +227,7 @@ function unlockd {
         PrintBlue "$cur_dir"
         result=$(lsof +D "$cur_dir")
         pids=$(echo "$result" | sed '1d' | awk '{print $2}')
-        if echo "$pids" | xargs -I {} kill -9 {}; then
+        if echo "$pids" | xargs -I {} kill -TERM {}; then
             PrintGreen "Killed:"
             PrintGreen "$pids"
         fi
